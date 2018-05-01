@@ -1,0 +1,8 @@
+FROM base-swift-ubuntu:latest
+
+# this is temporary. upstream playbooks should be adjusted to match
+ADD tmp_playbooks/ /tmp_playbooks
+
+RUN ansible-playbook -i "localhost," -c local /tmp_playbooks/common.yaml /tmp_playbooks/setup_account.yaml
+
+ENTRYPOINT ["swift-account-server", "/etc/swift/account-server.conf"]

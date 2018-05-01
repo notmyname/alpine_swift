@@ -1,0 +1,12 @@
+FROM ubuntu:16.04
+
+RUN apt-get update && apt-get upgrade -y
+
+RUN apt-get install -y ansible git python-pip
+
+RUN git clone --branch master --single-branch --depth 1 https://git.openstack.org/openstack/swift /usr/local/src/swift
+
+# this is temporary. upstream playbooks should be adjusted to match
+ADD tmp_playbooks/ /tmp_playbooks
+
+RUN ansible-playbook -i "localhost," -c local /tmp_playbooks/install_dependencies.yaml
