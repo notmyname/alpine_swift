@@ -1,0 +1,4 @@
+- name: Fail for unsupported distribution
+  fail:
+    msg: >
+      ERROR: {{ ansible_distribution }} is not a supported distribution

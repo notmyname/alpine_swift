@@ -1,0 +1,38 @@
+- name: install sudo
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - sudo
+    - lsb-core
+
+- name: update pip
+  pip:
+    name: pip
+    state: latest
+
+- name: install bindep
+  pip:
+    # specify github url until https://review.openstack.org/#/c/564650/ is available on pypi
+    name: git+https://github.com/openstack-infra/bindep.git#egg=bindep
+    state: latest
+
+- name: run bindep
+  command: bindep platform:dpkg -b
+  args:
+    chdir: /usr/local/src/swift
+  register: bindep_output_deb
+  failed_when: ( bindep_output_deb.rc not in [ 0, 1 ] )
+
+- name: install requirements from bindep
+  apt:
+    name: "{{ bindep_output_deb.stdout_lines }}"
+  when:
+    - bindep_output_deb.rc == 1
+
+- name: install dependencies with pip
+  pip:
+    requirements: "{{item}}"
+    chdir: /usr/local/src/swift
+  with_items:
+    - requirements.txt
+    - test-requirements.txt
