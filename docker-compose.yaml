@@ -1,10 +1,16 @@
 version: '3'
 services:
-  base:
+  base-ubuntu:
     build:
       context: .
       dockerfile: ./Dockerfile-ubuntu.base
     image: base-swift-ubuntu
+
+  # base-alpine:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile-alpine.base
+  #   image: base-swift-alpine
 
   syslog:
     container_name: syslog
@@ -19,14 +25,10 @@ services:
     image: memcached:alpine
     expose:
       - "11211"
-    networks:
-      swift_net:
-        ipv4_address: 172.16.238.8
 
   proxy:
     image: "swift-proxy"
     depends_on:
-      - base
       - syslog
       - memcache
     build:
@@ -34,9 +36,6 @@ services:
       dockerfile: ./Dockerfile.proxy
     ports:
       - "8080:8080/tcp"
-    networks:
-      swift_net:
-        ipv4_address: 172.16.238.9
     links:
       # make sure syslog container starts up before the app
       - syslog
@@ -46,16 +45,12 @@ services:
   account:
     image: "swift-account"
     depends_on:
-      - base
       - syslog
     build:
       context: .
       dockerfile: ./Dockerfile.account
     expose:
       - "6202"
-    networks:
-      swift_net:
-        ipv4_address: 172.16.238.10
     links:
       # make sure syslog container starts up before the app
       - syslog
@@ -66,16 +61,12 @@ services:
   container:
     image: "swift-container"
     depends_on:
-      - base
       - syslog
     build:
       context: .
       dockerfile: ./Dockerfile.container
     expose:
       - "6102"
-    networks:
-      swift_net:
-        ipv4_address: 172.16.238.11
     links:
       # make sure syslog container starts up before the app
       - syslog
@@ -86,16 +77,12 @@ services:
   object:
     image: "swift-object"
     depends_on:
-      - base
       - syslog
     build:
       context: .
       dockerfile: ./Dockerfile.object
     expose:
       - "6002"
-    networks:
-      swift_net:
-        ipv4_address: 172.16.238.12
     links:
       # make sure syslog container starts up before the app
       - syslog
@@ -106,12 +93,3 @@ services:
 
 volumes:
   swiftdata:
-
-networks:
-  swift_net:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-      -
-        subnet: 172.16.238.0/24
