@@ -4,6 +4,21 @@
     - name: rename proxy conf
       command: mv /etc/swift/proxy-server.conf-sample /etc/swift/proxy-server.conf
 
+    - name: add s3api to pipeline
+      replace:
+        dest: /etc/swift/proxy-server.conf
+        regexp: 'pipeline = (.*?) tempauth (.*?)'
+        replace: 'pipeline = \1 s3api tempauth \2'
+
+    - name: add s3api conf section
+      blockinfile:
+        dest: /etc/swift/proxy-server.conf
+        block: |
+          [filter:s3api]
+          use = egg:swift#s3api
+          storage_domain = localhost
+        insertafter: EOF
+
     - name: set memcached server address
       replace:
         dest: /etc/swift/proxy-server.conf
