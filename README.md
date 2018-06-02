@@ -6,8 +6,8 @@ to run: `docker-compose up`
 credentials
 -----------
 
-username: test:tester
-password: testing
+username: `test:tester`
+password: `testing`
 
 swift api example
 -----------------
