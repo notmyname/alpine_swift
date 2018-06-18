@@ -17,13 +17,18 @@
       file: path=/etc/swift state=absent
 
     - name: create clean /etc/swift
-      command: cp -r /usr/local/src/swift/etc /etc/swift
+      file:
+        path: /etc/swift
+        state: directory
+        mode: 0755
 
-    - name: rename swift conf
-      command: mv /etc/swift/swift.conf-sample /etc/swift/swift.conf
-
-    - name: set correct ownership of /etc/swift
-      file: path=/etc/swift owner={{ ansible_user_id }} group={{ ansible_user_gid }} recurse=yes
+    - name: create swift.conf
+      template:
+        src: files/swift.conf
+        dest: /etc/swift/swift.conf
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_gid }}"
+        mode: 0644
 
     - name: Copy remakerings
       copy:

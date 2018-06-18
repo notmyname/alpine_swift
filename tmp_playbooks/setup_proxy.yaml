@@ -1,63 +1,10 @@
 - hosts: all
   become: true
   tasks:
-    - name: rename proxy conf
-      command: mv /etc/swift/proxy-server.conf-sample /etc/swift/proxy-server.conf
-
-    - name: add s3api to pipeline
-      replace:
+    - name: create proxy conf
+      template:
+        src: files/proxy-server.conf
         dest: /etc/swift/proxy-server.conf
-        regexp: 'pipeline = (.*?) tempauth (.*?)'
-        replace: 'pipeline = \1 s3api tempauth \2'
-
-    - name: add s3api conf section
-      blockinfile:
-        dest: /etc/swift/proxy-server.conf
-        block: |
-          [filter:s3api]
-          use = egg:swift#s3api
-          storage_domain = localhost
-        insertafter: EOF
-
-    - name: set memcached server address
-      replace:
-        dest: /etc/swift/proxy-server.conf
-        regexp: '# memcache_servers = 127.0.0.1:11211'
-        replace: 'memcache_servers = memcache:11211'
-
-    - name: set one worker
-      replace:
-        dest: /etc/swift/proxy-server.conf
-        regexp: '# workers = auto'
-        replace: 'workers = 1'
-
-    - name: set account autocreate
-      replace:
-        dest: /etc/swift/proxy-server.conf
-        regexp: '# account_autocreate = false'
-        replace: 'account_autocreate = true'
-
-    - name: find sample config files
-      find: paths="/etc/swift" patterns="*.conf"-sample recurse=yes
-      register: find_sample_result
-
-    - name: clean up extra files in /etc/swift
-      file:
-        name: "{{ item }}"
-        state: absent
-      with_items: "{{ find_sample_result.files }}"
-
-    - name: find config files to modify user option
-      find: paths="/etc/swift" patterns="*.conf" recurse=yes
-      register: find_result
-
-    - name: replace user name
-      replace: dest={{ item.path }} regexp=<your-user-name> replace={{ ansible_user_id }}
-      with_items: "{{ find_result.files }}"
-
-    - name: replace user name 2
-      replace:
-        dest: "{{ item.path }}"
-        regexp: '# user = swift'
-        replace: "user = {{ ansible_user_id }}"
-      with_items: "{{ find_result.files }}"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_gid }}"
+        mode: 0644

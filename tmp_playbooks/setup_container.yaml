@@ -1,49 +1,10 @@
 - hosts: all
   become: true
   tasks:
-    - name: rename container conf
-      command: mv /etc/swift/container-server.conf-sample /etc/swift/container-server.conf
-
-    - name: find sample config files
-      find: paths="/etc/swift" patterns="*.conf"-sample recurse=yes
-      register: find_sample_result
-
-    - name: clean up extra files in /etc/swift
-      file:
-        name: "{{ item }}"
-        state: absent
-      with_items: "{{ find_sample_result.files }}"
-
-    - name: find config files to modify user option
-      find: paths="/etc/swift" patterns="*.conf" recurse=yes
-      register: find_result
-
-    - name: replace user name
-      replace: dest={{ item.path }} regexp=<your-user-name> replace={{ ansible_user_id }}
-      with_items: "{{ find_result.files }}"
-
-    - name: replace user name 2
-      replace:
-        dest: "{{ item.path }}"
-        regexp: '# user = swift'
-        replace: "user = {{ ansible_user_id }}"
-      with_items: "{{ find_result.files }}"
-
-    - name: turn off mount check
-      replace:
+    - name: create container conf
+      template:
+        src: files/container-server.conf
         dest: /etc/swift/container-server.conf
-        regexp: '# mount_check = true'
-        replace: 'mount_check = false'
-
-    - name: turn off fallocate
-      replace:
-        dest: /etc/swift/container-server.conf
-        regexp: '# disable_fallocate = false'
-        replace: 'disable_fallocate = true'
-
-    - name: set one worker
-      replace:
-        dest: /etc/swift/container-server.conf
-        regexp: '# workers = auto'
-        replace: 'workers = 1'
-
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_gid }}"
+        mode: 0644

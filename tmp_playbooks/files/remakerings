@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script is included to set up one-replica rings. The "ip" used is
+# the hostname as defined in the docker-compose file.
+
 set -e
 
 cd /etc/swift
