@@ -31,8 +31,7 @@
 
 - name: install bindep
   pip:
-    # specify github url until https://review.openstack.org/#/c/564650/ is available on pypi
-    name: git+https://github.com/openstack-infra/bindep.git#egg=bindep
+    name: bindep
     state: latest
 
 - name: run bindep
