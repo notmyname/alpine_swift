@@ -10,6 +10,25 @@
     name: pip
     state: latest
 
+- name: install libec build tools
+  apt: name={{item}} state=installed
+  with_items:
+    - build-essential
+    - autoconf
+    - automake
+    - libtool
+    - zlib1g-dev
+
+- name: download libec code
+  git:
+    repo: https://github.com/openstack/liberasurecode.git
+    dest: /usr/local/src/liberasurecode
+
+- name: install libec from source
+  shell: ./autogen.sh && ./configure && make && sudo make install && ldconfig
+  args:
+    chdir: /usr/local/src/liberasurecode
+
 - name: install bindep
   pip:
     # specify github url until https://review.openstack.org/#/c/564650/ is available on pypi
