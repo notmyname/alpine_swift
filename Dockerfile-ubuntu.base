@@ -9,4 +9,4 @@ RUN git clone --branch master --single-branch --depth 1 https://git.openstack.or
 # this is temporary. upstream playbooks should be adjusted to match
 ADD tmp_playbooks/ /tmp_playbooks
 
-RUN ansible-playbook -i "localhost," -c local /tmp_playbooks/install_dependencies.yaml
+RUN ansible-playbook -i "localhost," -c local /tmp_playbooks/install_dependencies.yaml /tmp_playbooks/common.yaml
