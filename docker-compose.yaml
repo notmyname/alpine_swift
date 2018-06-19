@@ -36,11 +36,6 @@ services:
       dockerfile: ./Dockerfile.proxy
     ports:
       - "8080:8080/tcp"
-    links:
-      # make sure syslog container starts up before the app
-      - syslog
-    volumes:
-      - /tmp/rsyslog-dev/log:/dev/log
 
   account:
     image: "swift-account"
@@ -51,12 +46,8 @@ services:
       dockerfile: ./Dockerfile.account
     expose:
       - "6202"
-    links:
-      # make sure syslog container starts up before the app
-      - syslog
     volumes:
       - "swiftdata:/srv/node/d1"
-      - /tmp/rsyslog-dev/log:/dev/log
 
   container:
     image: "swift-container"
@@ -67,12 +58,8 @@ services:
       dockerfile: ./Dockerfile.container
     expose:
       - "6102"
-    links:
-      # make sure syslog container starts up before the app
-      - syslog
     volumes:
       - "swiftdata:/srv/node/d1"
-      - /tmp/rsyslog-dev/log:/dev/log
 
   object:
     image: "swift-object"
@@ -83,12 +70,8 @@ services:
       dockerfile: ./Dockerfile.object
     expose:
       - "6002"
-    links:
-      # make sure syslog container starts up before the app
-      - syslog
     volumes:
       - "swiftdata:/srv/node/d1"
-      - /tmp/rsyslog-dev/log:/dev/log
 
 
 volumes:
