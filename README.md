@@ -87,4 +87,4 @@ s3 api example
 logging
 -------
 
-to check logs: `docker run -it --rm --volumes-from=syslog busybox tail /var/log/messages`
+to check logs: `docker logs -f syslog`. These logs are buffered.

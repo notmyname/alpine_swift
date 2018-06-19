@@ -14,11 +14,10 @@ services:
 
   syslog:
     container_name: syslog
-    build:
-      context: .
-      dockerfile: Dockerfile.syslog
-    volumes:
-      - /tmp/rsyslog-dev:/var/run/rsyslog/dev
+    image: factorish/syslog
+    command: [ "-t", "udp" ]
+    expose:
+      - "514/udp"
 
   memcache:
     container_name: memcache
