@@ -82,3 +82,9 @@ s3 api example
     $ md5sum test.yaml testyaml
     ece048c58129296893191a17ee3dbe66  test.yaml
     ece048c58129296893191a17ee3dbe66  testyaml
+
+
+logging
+-------
+
+to check logs: `docker run -it --rm --volumes-from=syslog busybox tail /var/log/messages`
