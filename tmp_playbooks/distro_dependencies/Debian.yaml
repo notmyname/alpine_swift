@@ -10,6 +10,7 @@
     name: pip
     state: latest
 
+# installing libec from source probably isn't necessary on ubuntu 18.04
 - name: install libec build tools
   apt: name={{item}} state=installed
   with_items:
@@ -46,11 +47,3 @@
     name: "{{ bindep_output_deb.stdout_lines }}"
   when:
     - bindep_output_deb.rc == 1
-
-- name: install dependencies with pip
-  pip:
-    requirements: "{{item}}"
-    chdir: /usr/local/src/swift
-  with_items:
-    - requirements.txt
-    - test-requirements.txt

@@ -1,20 +1,29 @@
 - hosts: all
   become: true
   tasks:
+    - name: install dependencies with pip
+      pip:
+        requirements: "{{item}}"
+        chdir: /usr/local/src/swift
+      with_items:
+        - requirements.txt
+
     - name: Install swift
       command: /usr/bin/python ./setup.py install
       args:
         chdir: /usr/local/src/swift
 
     - name: create /var/run/swift
-      file: >
-        path=/var/run/swift
-        owner={{ ansible_user_id }}
-        group={{ ansible_user_gid }}
-        state=directory
+      file:
+        path: /var/run/swift
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_gid }}"
+        state: directory
 
     - name: clean up /etc/swift directory
-      file: path=/etc/swift state=absent
+      file:
+        path: /etc/swift
+        state: absent
 
     - name: create clean /etc/swift
       file:
